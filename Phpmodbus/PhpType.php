@@ -1,12 +1,18 @@
 <?php
+/*
+ * Updated to support PHP 8 and above
+ * Migration Date: 2025-08-06
+ * by https://github.com/r000bat
+ */
+
 /**
- * Phpmodbus Copyright (c) 2004, 2012 Jan Krakora
+ * Phpmodbus Copyright (c) 2004, 2010 Jan Krakora, WAGO Kontakttechnik GmbH & Co. KG (http://www.wago.com)
  *
  * This source file is subject to the "PhpModbus license" that is bundled
  * with this package in the file license.txt.
  *
  * @author Jan Krakora
- * @copyright Copyright (c) 2004, 2012 Jan Krakora
+ * @copyright Copyright (c) 2004, 2010 Jan Krakora, WAGO Kontakttechnik GmbH & Co. KG (http://www.wago.com)
  * @license PhpModbus license
  * @category Phpmodbus
  * @package Phpmodbus
@@ -21,7 +27,7 @@
  * (array of bytes) to the PHP data type, i.e. signed int, unsigned int and float.
  *
  * @author Jan Krakora
- * @copyright  Copyright (c) 2004, 2012 Jan Krakora
+ * @copyright  Copyright (c) 2004, 2010 Jan Krakora, WAGO Kontakttechnik GmbH & Co. KG (http://www.wago.com)
  * @package Phpmodbus
  *
  */

@@ -1,4 +1,10 @@
 <?php
+/*
+ * Updated to support PHP 8 and above
+ * Migration Date: 2025-08-06
+ * by https://github.com/r000bat
+ */
+
 /**
  * Phpmodbus Copyright (c) 2004, 2012 Jan Krakora
  *  
@@ -38,12 +44,11 @@ class ModbusMasterTcp extends ModbusMaster {
   /**
    * ModbusMasterTcp
    *
-   * This is the constructor that defines {@link $host} IP address of the object. 
-   *     
+   * This is the constructor that defines {@link $host} IP address of the object.
+   *
    * @param String $host An IP address of a Modbus TCP device. E.g. "192.168.1.1".
-   */         
-  function ModbusMasterTcp($host){
-    $this->host = $host;
-    $this->socket_protocol = "TCP";
+   */
+  public function __construct($host){
+    parent::__construct($host, "TCP");
   }
 }
