@@ -1,6 +1,7 @@
 <?php
 /*
  * Updated to support PHP 8 and above
+ * add FC7 - Read Exception Status 
  * Migration Date: 2025-08-06
  * by https://github.com/r000bat
  */
@@ -31,7 +32,9 @@ require_once dirname(__FILE__) . '/PhpType.php';
  *
  * Implemented MODBUS master functions:
  *   - FC  1: read coils
+ *   - FC  2: read input discretes
  *   - FC  3: read multiple registers
+ *   - FC  7: read exception status
  *   - FC 15: write multiple coils
  *   - FC 16: write multiple registers
  *   - FC 23: read write registers
@@ -514,6 +517,91 @@ class ModbusMaster {
       $data[$i] = ord($packet[9+$i]);
     }
     return $data;
+  }
+
+  /**
+   * readExceptionStatus
+   *
+   * Modbus function FC7 (0x07) - Read Exception Status
+   *
+   * This function reads the exception status byte from a Modbus device
+   * given by {@link $unitId}.
+   *
+   * @param int $unitId Unit identifier of the Modbus device
+   * @return array Array of eight boolean status bits
+   */
+  function readExceptionStatus($unitId){
+    $this->status .= "readExceptionStatus: START\n";
+    // connect
+    $this->connect();
+    // send FC7
+    $packet = $this->readExceptionStatusPacketBuilder($unitId);
+    $this->status .= $this->printPacket($packet);
+    $this->send($packet);
+    // receive response
+    $rpacket = $this->rec();
+    $this->status .= $this->printPacket($rpacket);
+    // parse packet
+    $data = $this->readExceptionStatusParser($rpacket);
+    // disconnect
+    $this->disconnect();
+    $this->status .= "readExceptionStatus: DONE\n";
+    return $data;
+  }
+
+  /**
+   * fc7
+   *
+   * Alias to {@link readExceptionStatus} method
+   *
+   * @param int $unitId
+   * @return array
+   */
+  function fc7($unitId){
+    return $this->readExceptionStatus($unitId);
+  }
+
+  /**
+   * readExceptionStatusPacketBuilder
+   *
+   * Packet builder FC7 - Read Exception Status
+   *
+   * @param int $unitId
+   * @return string
+   */
+  private function readExceptionStatusPacketBuilder($unitId){
+    $dataLen = 1; // function code only
+    // build data section
+    $buffer1 = "";
+    // build body
+    $buffer2 = "";
+    $buffer2 .= iecType::iecBYTE(7);              // FC 7 = 7(0x07)
+    // build header
+    $buffer3 = '';
+    $buffer3 .= iecType::iecINT(rand(0,65000));   // transaction ID
+    $buffer3 .= iecType::iecINT(0);               // protocol ID
+    $buffer3 .= iecType::iecINT($dataLen + 1);    // length
+    $buffer3 .= iecType::iecBYTE($unitId);        // unit ID
+    // return packet string
+    return $buffer3 . $buffer2 . $buffer1;
+  }
+
+  /**
+   * readExceptionStatusParser
+   *
+   * FC7 response parser
+   *
+   * @param string $packet
+   * @return array
+   */
+  private function readExceptionStatusParser($packet){
+    $this->responseCode($packet);
+    $status = ord($packet[8]);
+    $bits = array();
+    for($i=0; $i<8; $i++){
+      $bits[$i] = (($status >> $i) & 0x01) ? true : false;
+    }
+    return $bits;
   }
 
   /**
